@@ -34,28 +34,28 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> addProduct(Product product) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+  Future<bool> addProduct(Product product) async {//รับค่า Product product คือข้อมูลสินค้าที่ต้องการเพิ่ม คืนค่าเป็น Future<bool> เพราะต้องรอการบันทึกข้อมูล และผลลัพธ์จะเป็น:
+    _isLoading = true;//ตั้งค่าว่าระบบกำลังโหลด หรือกำลังเพิ่มสินค้าอยู่
+    _error = null;//ล้างข้อความ error เก่าก่อนเริ่มเพิ่มสินค้าใหม่
+    notifyListeners();//แจ้ง UI ว่าข้อมูลเปลี่ยนแล้ว
 
-    try {
-      final success = await _apiService.createProduct(product);
-      if (success) {
-        await loadProducts();
-        return true;
+    try {//เริ่มส่วนที่อาจเกิด error ได้ เช่น การบันทึกสินค้าลง database หรือ backend
+      final success = await _apiService.createProduct(product);//ส่งข้อมูลสินค้าไปให้ _apiService.createProduct(product) เพื่อเพิ่มสินค้าใหม่
+      if (success) {//ตรวจสอบว่าเพิ่มสินค้าสำเร็จหรือไม่
+        await loadProducts();//ถ้าเพิ่มสินค้าสำเร็จ จะโหลดรายการสินค้าทั้งหมดใหม่
+        return true;//ส่งค่ากลับไปว่าเพิ่มสินค้าสำเร็จ
       }
-      _error = 'Failed to add product';
+      _error = 'Failed to add product';//ถ้า _apiService.createProduct(product) ส่งผลว่าไม่สำเร็จ
       return false;
-    } on ApiException catch (e) {
-      _error = e.message;
+    } on ApiException catch (e) {//ถ้าเกิด error แบบ ApiException จะเข้ามาส่วนนี้
+      _error = e.message;//นำข้อความ error จาก ApiException มาเก็บไว้ใน _error
       return false;
-    } catch (e) {
-      _error = 'An unexpected error occurred';
+    } catch (e) {//ถ้าเกิด error อื่น ๆ ที่ไม่ใช่ ApiException จะเข้ามาส่วนนี้
+      _error = 'An unexpected error occurred';//เก็บข้อความ error ทั่วไปว่าเกิดข้อผิดพลาดที่ไม่คาดคิด
       return false;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+    } finally {//ส่วนนี้จะทำงานเสมอ ไม่ว่าจะเพิ่มสินค้าสำเร็จหรือเกิด error
+      _isLoading = false;//ปิดสถานะ loading เพราะทำงานเสร็จแล้ว
+      notifyListeners();//แจ้ง UI อีกครั้งว่าการโหลดจบแล้ว หรือมี error เกิดขึ้น
     }
   }
 

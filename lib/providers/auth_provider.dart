@@ -20,7 +20,7 @@ class AuthProvider with ChangeNotifier {
     try {
       _error = null;
       debugPrint('AuthProvider: Attempting to register user: ${user.username}');
-      
+
       final taken = await _apiService.isUsernameTaken(user.username);
       if (taken) {
         _error = 'Username is already taken';
@@ -52,14 +52,14 @@ class AuthProvider with ChangeNotifier {
     try {
       _error = null;
       debugPrint('AuthProvider: Attempting login for username: $username');
-      
+
       final user = await _apiService.loginUser(username, password);
       if (user != null) {
         _currentUser = user;
         notifyListeners();
         return true;
       }
-      
+
       _error = 'Invalid username or password';
       notifyListeners();
       return false;
